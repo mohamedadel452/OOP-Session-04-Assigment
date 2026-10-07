@@ -35,13 +35,76 @@ namespace OOP04_SmartDelivery
 
     #endregion
 
+    #region PART 02: PRACTICAL IMPLEMENTATION
     #region Main Program
     class Program
     {
         static void Main(string[] args)
         {
-           Console.WriteLine("Welcome to Smart Delivery!");
+            // a. Create one StandardShipment.
+            DeliveryAddress addr1 = new DeliveryAddress("Cairo", "Tahrir", 1);
+            StandardShipment std = new StandardShipment("SH001", "Laptop", 3m, 80m, addr1);
+
+            // b. Create one ExpressShipment.
+            DeliveryAddress addr2 = new DeliveryAddress("Giza", "Dokki", 10);
+            ExpressShipment exp = new ExpressShipment("SH002", "Mobile Phone", 2m, 60m, addr2, 30m);
+
+            // c. Create one InternationalShipment.
+            DeliveryAddress addr3 = new DeliveryAddress("Alex", "Corniche", 50);
+            InternationalShipment intl = new InternationalShipment("SH003", "Television", 8m, 120m, addr3, "Germany", 100m);
+
+            // d. Add all shipments to the DeliveryCenter.
+            DeliveryCenter center = new DeliveryCenter("Delivery Center");
+            center.AddShipment(std);
+            center.AddShipment(exp);
+            center.AddShipment(intl);
+
+            // e. Print all shipment details.
+            center.PrintAllShipments();
+
+            // f. Print the tracking status of every shipment.
+            Console.WriteLine("Tracking Status\n");
+            center.PrintTrackingStatuses();
+            Console.WriteLine("==========================================\n");
+
+            // g. Print the insurance cost of every shipment.
+            Console.WriteLine("Insurance\n");
+            DeliveryReport.PrintInsurance(std);
+            DeliveryReport.PrintInsurance(exp);
+            DeliveryReport.PrintInsurance(intl);
+            Console.WriteLine("==========================================\n");
+
+            // h. Store the shipment objects in an ITrackable[] array and print their tracking statuses.
+            ITrackable[] trackables = { std, exp, intl };
+
+            //print tracking statuses using the ITrackable interface
+            Console.WriteLine("Tracking Statuses from ITrackable Interface\n");
+            foreach (ITrackable trackable in trackables)
+            {
+                string name = trackable is StandardShipment ? "StandardShipment" :
+                              trackable is ExpressShipment ? "ExpressShipment" :
+                              trackable is InternationalShipment ? "InternationalShipment" 
+                              : "Unknown Shipment Type";
+                Console.WriteLine($"Tracking Status of {name}: {trackable.GetTrackingStatus()}");
+            }
+
+
+            // i. Store the shipment objects in an IInsurable[] array and print their insurance values.
+                IInsurable[] insurables = { std, exp, intl };
+            //print insurance values using the IInsurable interface
+            Console.WriteLine("Insurance Values from IInsurable Interface\n");
+            foreach (IInsurable insurable in insurables)
+            {
+                string name = insurable is StandardShipment ? "StandardShipment" :
+                              insurable is ExpressShipment ? "ExpressShipment" :
+                              insurable is InternationalShipment ? "InternationalShipment"
+                              : "Unknown Shipment Type";
+                Console.WriteLine($"Insurance Value of {name}: {insurable.CalculateInsurance()}");
+
+                Console.WriteLine("Interface Polymorphism Demonstrated Successfully.\n");
+            }
         }
     }
+    #endregion
     #endregion
 }
