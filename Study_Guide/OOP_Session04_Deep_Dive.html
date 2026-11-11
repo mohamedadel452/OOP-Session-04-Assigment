@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OOP Session 04: Abstraction و Interface و Abstract Class</title>
+<style>
+:root{--bg:#f6f7f4;--fg:#1d2327;--mut:#5b6670;--card:#fff;--line:#d9ded8;--acc:#0b6b5c;--warn:#a4440f;--warnbg:#fdf0e6;--code:#10201c;--codefg:#d7efe6;--okbg:#e6f4ef}
+@media(prefers-color-scheme:dark){:root{--bg:#121816;--fg:#e4ebe8;--mut:#9aa8a3;--card:#1a2320;--line:#2c3834;--acc:#4fc2a8;--warn:#f0a066;--warnbg:#2b2118;--code:#0b1210;--codefg:#d7efe6;--okbg:#17302a}}
+:root[data-theme=x]{}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.85 "Segoe UI",Tahoma,"Noto Naskh Arabic",system-ui,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+main{max-width:860px;margin:0 auto;padding:28px 18px 80px}
+h1{font-size:2rem;line-height:1.4;margin:.2em 0}
+h2{font-size:1.45rem;margin:2.2em 0 .5em;padding-inline-start:12px;border-inline-start:5px solid var(--acc)}
+h3{font-size:1.1rem;margin:1.6em 0 .3em;color:var(--acc)}
+p{margin:.6em 0}
+.lead{color:var(--mut)}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+nav a{color:var(--fg);text-decoration:none;border:1px solid var(--line);background:var(--card);padding:4px 12px;border-radius:6px;font-size:.9rem}
+nav a:focus-visible,nav a:hover{border-color:var(--acc);color:var(--acc)}
+pre{direction:ltr;text-align:left;background:var(--code);color:var(--codefg);padding:14px 16px;border-radius:8px;overflow-x:auto;font:14px/1.6 Consolas,"Cascadia Code",Menlo,monospace;margin:.8em 0}
+code{direction:ltr;unicode-bidi:embed;font-family:Consolas,Menlo,monospace;font-size:.9em;background:var(--okbg);padding:1px 6px;border-radius:4px}
+pre code{background:none;padding:0;font-size:inherit}
+.box{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 16px;margin:1em 0}
+.warn{background:var(--warnbg);border-color:var(--warn)}
+.warn b.t{color:var(--warn)}
+.ok{background:var(--okbg);border-color:var(--acc)}
+.tw{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;min-width:560px;background:var(--card)}
+th,td{border:1px solid var(--line);padding:8px 12px;text-align:start;vertical-align:top;font-size:.95rem}
+th{background:var(--okbg)}
+ol li,ul li{margin:.3em 0}
+footer{margin-top:3em;color:var(--mut);font-size:.9rem}
+@media(max-width:520px){body{font-size:16px}h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<main>
+<h1>OOP Session 04: Abstraction و Interface و Abstract Class</h1>
+<p class="lead">شرح مبني على سلايدات الجلسة بالترتيب. كل قسم فيه الفكرة، وبعدها السبب التقني، وبعدها الكود والباگ اللي ممكن يحصل.</p>
+<nav>
+<a href="#abs">1. Abstraction</a><a href="#ac">2. Abstract Class</a><a href="#if">3. Interface</a><a href="#adv">4. المتقدم</a><a href="#cmp">5. المقارنة</a><a href="#fix">6. أخطاء السلايدات</a><a href="#sr">7. ملاحظة سينيور</a>
+</nav>
+
+<h2 id="abs">1) Abstraction</h2>
+<p><b>الفكرة:</b> بتستخدم الشيء من غير ما تعرف هو شغال إزاي. زراير العربية هي الـ abstraction، والمحرك هو التنفيذ المخفي.</p>
+<p><b>الفكرة التقنية:</b> تكتب كودك بالاعتماد على <b>عقد (Contract)</b> مش على <b>تنفيذ</b>، فتغيير التنفيذ ما يكسرش اللي بيستخدمه.</p>
+<div class="box warn"><p><b class="t">تصحيح (سلايد 4):</b> السلايد بيقول إن الـ abstraction "بيعزز الأمان". ده خلط. الـ abstraction هدفه إدارة التعقيد والتغيير. أي حد معاه الـ DLL يشوف كل حاجة بـ Reflection أو ILSpy.</p></div>
+<div class="tw"><table>
+<tr><th>المفهوم</th><th>بيحل إيه</th><th>في C#</th></tr>
+<tr><td>Abstraction</td><td>تعرض "إيه" وتخفي "إزاي"</td><td><code>abstract class</code> و <code>interface</code></td></tr>
+<tr><td>Encapsulation</td><td>حماية الـ state من التعديل الغلط</td><td><code>private</code> و properties و <code>readonly</code></td></tr>
+</table></div>
+
+<h2 id="ac">2) Abstract Class</h2>
+<pre><code>public abstract class Shape
+{
+    public string Name { get; }
+    protected Shape(string name) => Name = name;   // constructor مسموح
+
+    public abstract double Area();                 // بدون body: الابن لازم ينفذه
+
+    public void Describe()                         // كود جاهز
+        =&gt; Console.WriteLine($"{Name}: {Area():F2}");
+}
+
+public class Circle : Shape
+{
+    private readonly double _r;
+    public Circle(double r) : base("Circle") =&gt; _r = r;
+    public override double Area() =&gt; Math.PI * _r * _r;   // override إجبارية
+}
+
+// new Shape("x");        // CS0144: مينفعش instance
+Shape s = new Circle(5);  // reference من الأب، object من الابن
+s.Describe();             // Circle: 78.54</code></pre>
+<h3>ليه مينفعش <code>new Shape()</code>؟</h3>
+<p>لأن <code>Area()</code> ملهاش جسم. لو اتعمل object ونادينا عليها، مفيش كود يتنفذ. فالـ Compiler بيمنع الحالة من الأصل.</p>
+<h3>الميكانيزم: الـ Method Table (vtable)</h3>
+<ul>
+<li>كل class فيه دوال virtual/abstract/override له Method Table فيه slots، وكل slot بيشاور على كود.</li>
+<li>لما تنادي <code>s.Area()</code> الـ Runtime بيبص على <b>النوع الفعلي للـ object</b> مش نوع الـ reference، ويروح للـ slot ده.</li>
+<li>ده الـ <b>Runtime Polymorphism</b>. الـ abstract method هو slot فاضي في الأب، والابن بيملاه.</li>
+<li>الـ <code>override</code> هو اللي بيقول "أنا بحط كودي في نفس الـ slot". من غيره الـ Compiler يعتبر الـ abstract method ما اتنفذتش (سلايد 36 سؤال 8).</li>
+</ul>
+<div class="box warn"><p><b class="t">باگ حقيقي: استدعاء abstract/virtual من الـ Constructor</b></p>
+<pre><code>abstract class Base {
+    protected Base() { Init(); }
+    protected abstract void Init();
+}
+class Derived : Base {
+    private string _name;
+    public Derived() { _name = "Ahmed"; }   // بيتنفذ بعد constructor الأب
+    protected override void Init() =&gt; Console.WriteLine(_name ?? "NULL!");
+}
+new Derived();   // NULL!</code></pre>
+<p>الـ virtual dispatch شغال من أول لحظة، فـ <code>Init()</code> بتتنفذ في Derived قبل جسم الـ constructor بتاعه. ملحوظة: في C# الـ field initializers (<code>= "Ahmed"</code> على الحقل) بتتنفذ قبل constructor الأب، لكن التعيين جوه جسم الـ constructor لأ. القاعدة: ماتناديش virtual من constructor.</p></div>
+
+<h2 id="if">3) Interface</h2>
+<pre><code>public interface IPayment { void Pay(decimal amount); }
+
+public class CreditCardPayment : IPayment {
+    public void Pay(decimal amount) =&gt; Console.WriteLine($"Paid {amount} by Card");
+}
+public class PayPalPayment : IPayment {
+    public void Pay(decimal amount) =&gt; Console.WriteLine($"Paid {amount} by PayPal");
+}
+
+static void Process(IPayment p, decimal amount) =&gt; p.Pay(amount);  // مايعرفش النوع الحقيقي
+Process(new PayPalPayment(), 200);</code></pre>
+<h3>ليه multiple interfaces مسموحة و multiple classes لأ؟</h3>
+<p>المشكلة في الوراثة المتعددة من classes هي الـ <b>state</b>. لو D وارث من B و C وهما وارثين من A، هل في نسخة واحدة من حقول A ولا اتنين؟ ده بيعقّد layout الـ object وترتيب الـ constructors (Diamond). الـ interface مفيهوش instance fields فمفيش state يتضارب.</p>
+<div class="box warn"><p><b class="t">تصحيح (سلايد 11 و 32):</b> "no body / no private" كان صح قبل C# 8. دلوقتي الـ interface ممكن يحتوي default methods و static members و private helpers. بس <b>instance fields</b> لسه لأ.</p></div>
+<div class="box warn"><p><b class="t">مفهوم خاطئ: "تنفيذ الـ interface دايماً virtual"</b></p>
+<pre><code>interface IShape { void Draw(); }
+class Circle : IShape { public void Draw() =&gt; Console.WriteLine("Circle"); }
+class Ring : Circle   { public new void Draw() =&gt; Console.WriteLine("Ring"); }
+
+IShape s = new Ring();
+s.Draw();   // Circle !</code></pre>
+<p>الـ implicit implementation بيتعلّم في الـ IL كـ <code>virtual final</code>. الـ interface map بتاع Circle بيشاور على دالته، و Ring ما عملش re-implementation. الحل: خلي <code>Draw</code> virtual وسوّي override، أو اكتب <code>class Ring : Circle, IShape</code>.</p></div>
+<h3>ليه ده مهم للـ Backend؟ (DI)</h3>
+<pre><code>builder.Services.AddScoped&lt;IPaymentService, PayPalPayment&gt;();
+public class OrderController(IPaymentService payment) { }</code></pre>
+<p>الـ DI والـ unit testing بالـ mocks معتمدين على إنك تطلب <code>IPaymentService</code> في الـ constructor. من غير الـ interface كل class مربوطة بتنفيذ واحد.</p>
+<div class="box warn"><p><b class="t">باگ أداء ومنطق: Struct + Interface = Boxing</b></p>
+<pre><code>interface ICounter { void Inc(); int Value { get; } }
+struct Counter : ICounter { int _v; public void Inc() =&gt; _v++; public int Value =&gt; _v; }
+
+var c = new Counter();
+ICounter i = c;      // boxing: نسخة على الـ Heap
+i.Inc();
+Console.WriteLine(c.Value);   // 0 : الأصلي ما اتغيرش</code></pre>
+<p>لتجنب الـ boxing استخدم generic بقيد: <code>void Run&lt;T&gt;(T x) where T : ICounter</code>. الـ JIT بيولّد كود متخصص لكل struct.</p></div>
+
+<h2 id="adv">4) الموضوعات المتقدمة في الـ Interface</h2>
+<h3>4.1 تعارض الأسماء</h3>
+<pre><code>interface IFirst  { void Display(); }
+interface ISecond { void Display(); }
+class MyClass : IFirst, ISecond {
+    public void Display() =&gt; Console.WriteLine("MyClass.Display()");  // تنفيذ واحد للاتنين
+}</code></pre>
+<h3>4.2 Explicit Implementation</h3>
+<pre><code>interface ILogger    { void Log(string m); }
+interface IAuditable { void Log(string m); }
+
+class FileLogger : ILogger, IAuditable {
+    void ILogger.Log(string m)    =&gt; Console.WriteLine($"[LOG] {m}");
+    void IAuditable.Log(string m) =&gt; Console.WriteLine($"[AUDIT] {m}");
+}
+
+var f = new FileLogger();
+// f.Log("x");                 // لا تظهر على النوع
+((ILogger)f).Log("started");   // [LOG] started
+((IAuditable)f).Log("login");  // [AUDIT] login</code></pre>
+<ul>
+<li>مالهاش access modifier، ومش بتظهر إلا من reference بنوع الـ interface.</li>
+<li>استخدام فعلي في الـ BCL: <code>List&lt;T&gt;</code> بينفذ <code>IList</code> (غير generic) explicitly عشان يخبي <code>Add(object)</code> غير الآمنة.</li>
+<li>الثمن: مع الـ struct أي استدعاء عن طريق الـ interface بيعمل boxing.</li>
+</ul>
+<h3>4.3 Default Interface Methods (C# 8+)</h3>
+<pre><code>public interface IPrinter {
+    void Print(string text);
+    void PrintLine(string text) =&gt; Print(text + "\n");   // default
+}
+class ConsolePrinter : IPrinter {
+    public void Print(string text) =&gt; Console.Write(text);
+}
+
+var cp = new ConsolePrinter();
+// cp.PrintLine("x");     // CS1061
+IPrinter p = cp;
+p.PrintLine("World");     // يشتغل</code></pre>
+<div class="box warn"><p><b class="t">تصحيح (سلايد 24):</b> التعليق "PrintLine is inherited" غلط. الـ default method مش بتتوّرث ومش بتظهر على نوع الـ class، بس عن طريق reference من نوع الـ interface. وده سبب إن سلايد 27 اشتغل: كتب <code>IGreet g = new Person();</code>.</p></div>
+<p><b>ليه اتصممت كده؟</b> الهدف تطوير interface منشور من غير ما تكسر اللي بينفذوه. قبل C# 8 إضافة دالة لـ interface كانت بتكسر كل class بينفذه.</p>
+<h3>Diamond مع الـ Default Methods</h3>
+<pre><code>interface IA { void M() =&gt; Console.WriteLine("IA"); }
+interface IB : IA { void IA.M() =&gt; Console.WriteLine("IB"); }
+interface IC : IA { void IA.M() =&gt; Console.WriteLine("IC"); }
+class D : IB, IC { }   // CS8705: no most specific implementation</code></pre>
+<p>الـ Compiler بيرفض الغموض. الحل override صريح في <code>D</code>.</p>
+
+<h2 id="cmp">5) المقارنة: Abstract Class مقابل Interface</h2>
+<div class="tw"><table>
+<tr><th>البند</th><th>Abstract Class</th><th>Interface</th></tr>
+<tr><td>الفكرة</td><td>is-a مع كود مشترك</td><td>can-do: قدرة</td></tr>
+<tr><td>State (fields)</td><td>نعم</td><td>لا (static فقط)</td></tr>
+<tr><td>Constructor</td><td>نعم</td><td>لا</td></tr>
+<tr><td>كود جاهز</td><td>نعم</td><td>محدود (default methods)</td></tr>
+<tr><td>عدد ما تورثه</td><td>واحد</td><td>أي عدد</td></tr>
+<tr><td>إضافة member لاحقاً</td><td>virtual آمن، abstract يكسر</td><td>آمن لو default</td></tr>
+<tr><td>مع الـ struct</td><td>لا</td><td>نعم (مع boxing)</td></tr>
+</table></div>
+<p><b>متى؟</b> Abstract class لما في state وسلوك مشترك بين أنواع متقاربة (مثال: Document و PdfDocument). Interface لأنواع مالهاش علاقة بتشترك في قدرة (مثال: Invoice و Image كلهم IExportable). والنمط الشائع هو الاتنين مع بعض: <code>abstract class RepositoryBase&lt;T&gt; : IRepository&lt;T&gt;</code>.</p>
+<div class="box warn"><p><b class="t">الحدود:</b> الـ abstract class بتحبسك في شجرة وراثة واحدة، والـ hierarchy العميقة بتعمل Fragile Base Class (تعديل في الأب يكسر الأبناء). والـ interface لكل class بتنفيذ واحد بيزود التعقيد من غير فايدة، استخدمه لما يكون في أكتر من تنفيذ أو احتياج للـ mocking.</p></div>
+
+<h2 id="fix">6) أخطاء في السلايدات</h2>
+<div class="box ok"><ol>
+<li><b>سلايد 36 سؤال 8:</b> الإجابة المكتوبة C غلط. الخطأ (CS0534) بيحصل عند تعريف <code>class Employee</code> نفسه لأنه ما نفّذش الـ abstract member بـ override، فالصح <b>A</b>. الشرح اللي تحتها صح لكن مكان الخطأ غلط.</li>
+<li><b>سلايد 24:</b> "inherited" غلط (القسم 4.3).</li>
+<li><b>سلايد 4:</b> "Enhances security" خلط مع الـ encapsulation.</li>
+<li><b>سلايد 11 و 32:</b> تعريفات الـ interface قديمة قبل C# 8.</li>
+</ol></div>
+
+<h2 id="sr">7) ملاحظة سينيور</h2>
+<p>في C# 11 ظهرت <b>static abstract members في الـ interface</b> وهي أساس الـ Generic Math (<code>INumber&lt;T&gt;</code>)، فتكتب <code>T Add&lt;T&gt;(T a, T b) where T : INumber&lt;T&gt;</code> وتشتغل على int و double من غير boxing.</p>
+<p><b>اقتراحات للتعمق:</b> vtable و interface dispatch في الـ IL، الفرق بين virtual و abstract و new، Template Method و Composition over Inheritance، و SOLID (DIP و ISP) مع الـ DI.</p>
+<footer>مبني من ملف Session04C-OOP.pptx. سلايد الـ Session Task مش مشروح لأن نصه مش واضح في الصورة.</footer>
+</main>
+</body>
+</html>
